@@ -29,7 +29,7 @@ class URController:
         self.speed_bias = self.target_speed - self.actual_speed
         
     def pose_control(self, pose):
-        self.current_pose = self.rtde_r.getActualTCPPose()
+        self.state_update()
         trans = self.current_pose[:3] + pose[:3]*0.05
         pose[3:]*=0.2
         pose[4:]*=-1
@@ -38,6 +38,16 @@ class URController:
         rot = (r0 * r1).as_rotvec()
         target_pose = np.concatenate([trans, rot])
         self.rtde_c.servoL(target_pose, 0.1, 0.1, 1/125,0.15,200)
+
+    def state_update(self):
+        """
+        Update the current state of the robot.
+        """
+        self.current_pose = self.rtde_r.getActualTCPPose()
+        self.joint_positions = self.rtde_r.getActualQ()
+        self.joint_velocities = self.rtde_r.getActualQd()
+        self.tcp_speed = self.rtde_r.getActualTCPSpeed()
+        self.tcp_force = self.rtde_r.getActualTCPForce()
 
     def grasp(self):
         """
