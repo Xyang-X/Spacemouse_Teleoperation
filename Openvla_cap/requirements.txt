@@ -1,0 +1,7 @@
+numpy
+opencv-python
+pyrealsense2
+scipy
+rtde_control
+rtde_receive
+
