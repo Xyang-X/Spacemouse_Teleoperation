@@ -35,12 +35,9 @@ AttributeError: python: undefined symbol: PyCObject_AsVoidPtr
 ```
 
 Solution:
-1. Open
-```bash
-$HOME/anaconda3/envs/franka/lib/python3.10/site-packages/spnav/__init__.py
-```
+1. Open `__init__.py` file of spnav
 
-2. Replace these two lines 
+1. Replace these two lines 
 
 ```bash
 pythonapi.PyCObject_AsVoidPtr.restype = c_void_p
@@ -50,7 +47,7 @@ pythonapi.PyCObject_AsVoidPtr.argtypes = [py_object]
 by
 
 ```bash
-from ctypes import pythonapi, py_object, c_void_p
+from ctypes import pythonapi, py_object, c_void_p, c_char_p
 
 try:
     # For Python < 3.8
