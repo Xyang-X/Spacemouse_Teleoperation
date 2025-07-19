@@ -11,7 +11,7 @@ from collections import deque
 if __name__ == "__main__":
 
 
-    # Initialize the Franka controller
+    # Initialize the controller
     ur_controller = URController()
     try:
         with Spacemouse(deadzone=0.1,transmat=3) as sm:

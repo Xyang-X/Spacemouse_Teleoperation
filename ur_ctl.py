@@ -30,8 +30,8 @@ class URController:
         
     def pose_control(self, pose):
         self.current_pose = self.rtde_r.getActualTCPPose()
-        trans = self.current_pose[:3] + pose[:3]*0.1
-        pose[3:]*=0.1
+        trans = self.current_pose[:3] + pose[:3]*0.05
+        pose[3:]*=0.2
         pose[4:]*=-1
         r0 = R.from_rotvec(self.current_pose[3:6])
         r1 = R.from_rotvec(pose[3:6])
