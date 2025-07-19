@@ -116,13 +116,14 @@ def main():
     last_g = last_r = 0
 
     frame_idx = 0
-    rot_permit = False
+    
 
     try:
         with Spacemouse(deadzone=0.1,transmat=3) as sm:
             while True:
                 t0 = time.time()
                 motion_state = sm.get_motion_state_transformed()
+                motion_state[3:5] = 0  # Disable rotation of x,y axis
                 if sm.is_button_pressed(0):
                     gripper_state = not gripper_state
                     if gripper_state:
@@ -135,10 +136,10 @@ def main():
                 if sm.is_button_pressed(1):
                     break
 
-                if not rot_permit:
-                    motion_state[3:] = 0
-                else:
-                    motion_state[:3] = 0
+                # if not rot_permit:
+                #     motion_state[3:] = 0
+                # else:
+                #     motion_state[:3] = 0
                 # Send the motion state to the Franka controller
                 ur_controller.pose_control(motion_state)
 
