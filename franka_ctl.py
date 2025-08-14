@@ -105,6 +105,9 @@ class franka_spm():
         self.cartesian_state = self.robot.current_cartesian_state
         self.robot_pose = self.cartesian_state.pose  # Contains end-effector pose and elbow position
         self.ee_pose = self.robot_pose.end_effector_pose
+        robot_velocity = self.cartesian_state.velocity  # Contains end-effector twist and elbow velocity
+        self.ee_twist = robot_velocity.end_effector_twist
+        self.elbow_vel = robot_velocity.elbow_velocity
         
         # print(self.ee_pose)   
 
@@ -112,7 +115,7 @@ class franka_spm():
         print(f"At time {abs_time}, the target joint positions were {control_signal.q}")
  
  
-    def move_to_pose(self, target_pose  ):
+    def pose_control(self, target_pose  ):
         """
         Move the robot to the target position
         """
@@ -142,7 +145,7 @@ class franka_spm():
 if __name__ == "__main__":
     franka_spm_instance = franka_spm()
     print(franka_spm_instance.ee_pose.translation)
-    franka_spm_instance.move_to_pose(np.array([0.45,0,0.1,np.pi,0,0]))
+    franka_spm_instance.pose_control(np.array([0.45,0,0.1,np.pi,0,0]))
 
 
     # franka_spm_instance.velocity_control(np.array([0, 0.1, 0.0, 0.0, 0.0, 0.0], dtype=np.float32))  # Example twist input

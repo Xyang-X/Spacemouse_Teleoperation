@@ -2,7 +2,7 @@ numpy==1.26.4
 opencv-python
 pyrealsense2
 FuzzyTM>=0.4.0
-scipy=1.11.4
+scipy==1.11.4
 ur_rtde
 pymodbus
 spnav
