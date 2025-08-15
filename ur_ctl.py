@@ -28,9 +28,9 @@ class URController:
         # print('Speed bias: ', target_speed - actual_speed)
         self.speed_bias = self.target_speed - self.actual_speed
         
-    def pose_control(self, pose):
+    def pose_control(self, pose, scale=1):
         self.state_update()
-        trans = self.current_pose[:3] + pose[:3]*0.05
+        trans = self.current_pose[:3] + pose[:3]*0.05*scale
         pose[3:]*=0.2
         pose[4:]*=-1
         r0 = R.from_rotvec(self.current_pose[3:6])
