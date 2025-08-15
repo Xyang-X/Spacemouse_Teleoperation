@@ -7,7 +7,7 @@ async def hello():
     uri = "ws://192.168.31.190:8765"  # 换成服务器局域网IP
     async with websockets.connect(uri) as websocket:
         # 构造 JSON 数据
-        message = {"action": "SLEEP"}
+        message = {"command": "QUEST"}
         await websocket.send(json.dumps(message))
         print("发送:", message)
 
@@ -18,7 +18,7 @@ async def hello():
         print("收到:", json.loads(response))
 
         time.sleep(1)  # 等待一秒后发送下一个消息
-        message = {"action": "POSE_CONTROL", "command": ee_pose}
+        message = {"command": "POSE_CONTROL", "action": ee_pose}
         await websocket.send(json.dumps(message))
         print("发送:", message)
         
