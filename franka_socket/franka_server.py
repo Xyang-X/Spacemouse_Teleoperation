@@ -28,7 +28,7 @@ def franka_ctrl():
                 franka_controller.release()
             elif command == 'STOP':
                 franka_controller.velocity_control([0, 0, 0, 0, 0, 0])  # 停止机器人
-            elif command == 'SLEEP':
+            elif command == 'QUEST':
                 pass
             response = {    'status': command,
                         'ee_pose': franka_controller.ee_pose,
