@@ -14,10 +14,11 @@ async def hello():
         # 接收服务器返回
         response = await websocket.recv()
         ee_pose = json.loads(response).get("ee_pose", {})
-        ee_pose[2] += 0.05  # 修改末端执行器位置
+        ee_pose[0][2] -= 0.1  # 修改末端执行器位置
         print("收到:", json.loads(response))
 
         time.sleep(1)  # 等待一秒后发送下一个消息
+        print(ee_pose)
         message = {"command": "POSE_CONTROL", "action": ee_pose}
         await websocket.send(json.dumps(message))
         print("发送:", message)
