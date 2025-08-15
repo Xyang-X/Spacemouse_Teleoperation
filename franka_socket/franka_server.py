@@ -10,7 +10,7 @@ import time
 import threading
 
 
-action='SLEEP'          #   Franka执行的任务，初始状态为休眠
+command='QUEST'          #   Franka执行的任务，初始状态为休眠
 def franka_ctrl():
     franka_controller = franka_spm()
     global command
