@@ -56,14 +56,16 @@ class franka_spm():
         print(f"At time {abs_time}, the target joint positions were {control_signal.q}")
  
  
-    def pose_control(self, target_pose  ):
+    def pose_control(self, target_pose,mode=0):
         """
         Move the robot to the target position
         """
-        r=R.from_euler('xyz', target_pose[3:])
-        quat= r.as_quat()
-        print(quat)
-        m_cp=CartesianMotion(Affine(target_pose[:3],quat),relative_dynamics_factor=0.2)
+        if mode==0:
+            r=R.from_euler('xyz', target_pose[3:])
+            quat= r.as_quat()
+            m_cp=CartesianMotion(Affine(target_pose[:3],quat),relative_dynamics_factor=0.2)
+        elif mode==1:
+            m_cp=CartesianMotion(Affine(target_pose[:3],target_pose[3:]),relative_dynamics_factor=0.2)
         self.robot.move(m_cp)    
 
     def grasp(self):

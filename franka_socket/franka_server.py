@@ -23,7 +23,7 @@ def franka_ctrl():
                 print('vel')
             elif command == 'POSE_CONTROL':
                 print('pose')
-                franka_controller.pose_control(action)
+                franka_controller.pose_control(action,mode=1)
             elif command == 'GRASP':
                 franka_controller.grasp()
             elif command == 'RELEASE':
