@@ -36,62 +36,6 @@ class franka_spm():
         # print(twist)
         # print(self.ee_pose)
         self.robot.move(m_cv, asynchronous=True)    
-        
-    def waypoint_control(self, pose):
-        """
-        pose: [x, y, z, roll, pitch, yaw]
-        """
-        if all(x<0.1 for x in pose):
-            return
-        self.cb1()
-        # Transform the pose to the robot's coordinate system
-        pose[:3] *= self.translation_inter_scale  # Scale translation
-        pose[3:] *= 0  # Scale rotation
-        currr_pose=np.concatenate([self.ee_pose.translation,R.from_quat(self.ee_pose.quaternion).as_rotvec()])
-        pose_inter=self._generate_interpolated_poses(currr_pose,pose+currr_pose,3)
-        pose_commands=[]
-        print('Command:')
-        for pose in pose_inter:
-            quat=R.from_rotvec(pose[3:]).as_quat()
-            pose_commands.append(CartesianWaypoint(Affine(pose[:3],quat)))
-            print(pose)
-
-        m_wp=CartesianWaypointMotion(pose_commands,relative_dynamics_factor=0.2)
-        time.sleep(1)  # Ensure the robot state is updated before moving
-        # m_wp.register_callback(self.cb)  # Register the callback function to be called periodically
-        self.robot.move(m_wp, asynchronous=True)
-    def _generate_interpolated_poses(self, start_pose: np.ndarray, end_pose: np.ndarray, num_points: int) -> np.ndarray:
-        """
-        在两个6D姿态（位置 + 旋转向量）之间生成插值轨迹。
-        
-        参数：
-            start_pose: shape=(6,), 初始姿态
-            end_pose: shape=(6,), 目标姿态
-            num_points: int，插值点数（不含首尾）
-
-        返回：
-            poses: shape=(num_points + 2, 6)，包含起点、插值点和终点的轨迹
-        """
-        assert start_pose.shape == (6,)
-        assert end_pose.shape == (6,)
-        assert num_points >= 0
-
-        # 拆分位置和旋转
-        pos_start, pos_end = start_pose[:3], end_pose[:3]
-        rot_start, rot_end = R.from_rotvec(start_pose[3:]), R.from_rotvec(end_pose[3:])
-
-        # 创建时间轴和插值器
-        key_times = [0, 1]
-        interp_times = np.linspace(0, 1, num_points + 2)  # 包括首尾
-        slerp = Slerp(key_times, R.concatenate([rot_start, rot_end]))
-
-        # 插值
-        positions = np.outer(1 - interp_times, pos_start) + np.outer(interp_times, pos_end)
-        rotations = slerp(interp_times).as_rotvec()
-
-        # 合并结果
-        poses = np.hstack((positions, rotations))
-        return poses
 
 
     def cb1(self):
@@ -138,6 +82,22 @@ class franka_spm():
         speed = 0.02  # [m/s]
         self.gripper.open(speed)
     
+    def Affine2list(self,affine):
+        """
+        Convert Affine to list
+        """
+        translation = affine.translation
+        rotation = affine.quaternion
+        # return [translation[0], translation[1], translation[2], rotation[0], rotation[1], rotation[2], rotation[3]]
+        return [translation.tolist(),translation.tolist()]
+    
+    def Twist2list(self,twist):
+        """
+        Convert Twist to list
+        """
+        linear = twist.linear
+        angular = twist.angular
+        return [linear[0], linear[1], linear[2], angular[0], angular[1], angular[2]]
         
 if __name__ == "__main__":
     franka_spm_instance = franka_spm()

@@ -20,7 +20,9 @@ def franka_ctrl():
         try:
             if command == 'VELOCITY_CONTROL':
                 franka_controller.velocity_control(action)
+                print('vel')
             elif command == 'POSE_CONTROL':
+                print('pose')
                 franka_controller.pose_control(action)
             elif command == 'GRASP':
                 franka_controller.grasp()
@@ -29,11 +31,12 @@ def franka_ctrl():
             elif command == 'STOP':
                 franka_controller.velocity_control([0, 0, 0, 0, 0, 0])  # 停止机器人
             elif command == 'QUEST':
+                print('quest')
                 pass
             response = {    'status': command,
-                        'ee_pose': franka_controller.ee_pose,
-                        'ee_twist': franka_controller.ee_twist,
-                        'elbow_vel': franka_controller.elbow_vel}
+                        'ee_pose': franka_controller.Affine2list(franka_controller.ee_pose),
+                        'ee_twist': franka_controller.Twist2list(franka_controller.ee_twist),
+                        'elbow_vel': franka_controller.Twist2list(franka_controller.ee_twist)}
         except Exception as e:
             print(f"Error in franka_ctrl: {e}")
             response = {'status': 'error', 'message': str(e)}
@@ -48,17 +51,19 @@ async def handle_connection(websocket):
             global command
             global response
             global action
-            
+            print(msg)
             command = msg.get("command")
             if command=='VELOCITY_CONTROL' or command=='POSE_CONTROL': 
                 action = msg.get("action")
                 await websocket.send(json.dumps(response))
-            elif action=='GRASP' or action=='RELEASE':
+            elif command=='GRASP' or command=='RELEASE':
 
+                await websocket.send(json.dumps(response))
+            elif command=='QUEST':
                 await websocket.send(json.dumps(response))
         
             # 回复上位机
-            asyncio.run(websocket.send(json.dumps(response)))
+            # asyncio.run(websocket.send(json.dumps(response)))
     except Exception as e:
         print(f"Connection error: {e}")
     finally:
