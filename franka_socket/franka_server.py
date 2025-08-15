@@ -41,7 +41,7 @@ def franka_ctrl():
         
         time.sleep(0.1)  # Control loop frequency
 
-async def handle_connection(websocket, path):
+async def handle_connection(websocket):
     try:
         async for message in websocket:
             msg = json.loads(message)
