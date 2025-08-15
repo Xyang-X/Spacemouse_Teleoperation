@@ -6,3 +6,4 @@ scipy==1.11.4
 ur_rtde
 pymodbus
 spnav
+websockets
