@@ -18,7 +18,7 @@ Bug‑fix 2025‑07‑01
 Usage
 -----
 ```bash
-python openvla_finetune/capture_openvla_v7.py --prompt "pick up the banana and put it in the basket"
+python Openvla_cap/capture_openvla_sm_v0.py --prompt "put banana into basket"
 ```
 This creates `dataset_root/session_YYYY‑MM‑DD_HH‑MM‑SS/` with images, CSV, and prompt.txt – ready for RLDS conversion.
 """
@@ -50,14 +50,10 @@ GRIPPER_IP         = "192.168.1.11"
 INIT_POS           = np.array([0.0, -0.50, 0.35])
 FIXED_RV           = R.from_euler("xyz", [np.pi, 0, 0]).as_rotvec()
 
-CONTROL_HZ         = 10              # 100 ms loop
+CONTROL_HZ         = 10               # 100 ms loop
 POS_EPS            = 0.002           # 2 mm dead‑band
 MAX_STEP           = 0.05            # 5 cm per frame safety cap
-SERVO_SPEED        = 0.30
-SERVO_ACCEL        = 1.20
-SERVO_TIME         = 0.20            # ≥ loop_dt for smooth blending
-SERVO_LOOKAHEAD    = 0.05
-SERVO_GAIN         = 300
+SPEED_SCALE        = 0.3
 
 GRIPPER_COOLDOWN   = 1.0             # s between actions
 
@@ -91,7 +87,8 @@ def main():
     ur_controller = URController(init_joints=True)  
 
     cam      = init_rs()
-
+    time.sleep(2)
+    print("Camera ready")
 
     # —— Session folders / files ——
     sess = Path(SAVE_ROOT) / datetime.now().strftime("session_%Y-%m-%d_%H-%M-%S")
@@ -141,13 +138,13 @@ def main():
                 # else:
                 #     motion_state[:3] = 0
                 # Send the motion state to the Franka controller
-                ur_controller.pose_control(motion_state)
+                ur_controller.pose_control(motion_state,scale=SPEED_SCALE)
 
 
                 d_xyz = motion_state[:3] - last_pose[:3]
-                dist  = np.linalg.norm(d_xyz)
-                if dist > POS_EPS:
-                    if dist > MAX_STEP:
+                dist  = np.linalg.norm(d_xyz)   #compute the Euclidean distance (magnitude)
+                if dist > POS_EPS:              #only proceed when the displacement is significant enough
+                    if dist > MAX_STEP:         #prevent large jumps
                         d_xyz = d_xyz / dist * MAX_STEP
                     last_pose = motion_state.copy()
 
@@ -157,6 +154,7 @@ def main():
 
                 # 6. camera & csv
                 frm = cam.poll_for_frames()
+
                 if frm and frm.get_color_frame():
                     c   = frm.get_color_frame()
                     rgb = np.asanyarray(c.get_data())
@@ -178,6 +176,7 @@ def main():
                 dt = time.time() - t0
                 if dt < loop_dt:
                     time.sleep(loop_dt - dt)
+                
 
     except KeyboardInterrupt:
         print("\n⏹ Interrupted by user – stopping")
