@@ -8,10 +8,7 @@ class franka_spm():
     def __init__(self,translation_inter_scale=0.3,rotation_inter_scale=0.8):
         self.robot = Robot("172.16.0.2")
         # self.gripper = Gripper("172.16.0.2")
-        self.state = self.robot.state
-        self.cartesian_state = self.robot.current_cartesian_state
-        self.robot_pose = self.cartesian_state.pose  # Contains end-effector pose and elbow position
-        self.ee_pose = self.robot_pose.end_effector_pose
+        self.cb1()  # Initialize the robot state
         self.robot.relative_dynamics_factor = RelativeDynamicsFactor(0.05, 0.1, 0.15)
         joint_state = self.robot.current_joint_state
         joint_pos = joint_state.position
