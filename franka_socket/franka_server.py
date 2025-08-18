@@ -10,29 +10,28 @@ import time
 import threading
 
 
-command='QUEST'          #   Franka执行的任务，初始状态为休眠
+msg={'command':'QUEST'}          #   Franka执行的任务，初始状态为休眠
 def franka_ctrl():
     franka_controller = franka_spm()
-    global command
     global response
-    global action
     global msg
     while True:
         try:
-            if msg.get("command") == 'VELOCITY_CONTROL':
+            command = msg.get("command")
+            if command == 'VELOCITY_CONTROL':
                 action = msg.get("action")
                 franka_controller.velocity_control(action)
-            elif msg.get("command") == 'POSE_CONTROL':
+            elif command == 'POSE_CONTROL':
                 action = msg.get("action")
                 mode = msg.get("mode")
                 franka_controller.pose_control(action,mode=mode)
-            elif msg.get("command") == 'GRASP':
+            elif command == 'GRASP':
                 franka_controller.grasp()
-            elif msg.get("command") == 'RELEASE':
+            elif command == 'RELEASE':
                 franka_controller.release()
-            elif msg.get("command") == 'STOP':
+            elif command == 'STOP':
                 franka_controller.velocity_control([0, 0, 0, 0, 0, 0])  # 停止机器人
-            elif msg.get("command") == 'QUEST':
+            elif command == 'QUEST':
                 pass
             response = {    'status': command,
                         'ee_pose': franka_controller.Affine2list(franka_controller.ee_pose),
@@ -48,28 +47,17 @@ def franka_ctrl():
 async def handle_connection(websocket):
     try:
         async for message in websocket:
-            global command
             global response
-            global action
             global msg
             msg = json.loads(message)
-            # command = msg.get("command")
-            # if command=='VELOCITY_CONTROL' or command=='POSE_CONTROL': 
-            #     action = msg.get("action")
-            #     await websocket.send(json.dumps(response))
-            # elif command=='GRASP' or command=='RELEASE':
-
-            #     await websocket.send(json.dumps(response))
-            # elif command=='QUEST':
-            #     await websocket.send(json.dumps(response))
             await websocket.send(json.dumps(response))
         
-            # 回复上位机
-            # asyncio.run(websocket.send(json.dumps(response)))
+
     except Exception as e:
         print(f"Connection error: {e}")
     finally:
-        asyncio.run(websocket.close())
+
+        await websocket.close()
 
 # 启动 WebSocket 服务器
 async def start_server():

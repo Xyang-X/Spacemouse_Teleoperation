@@ -81,5 +81,6 @@ class FrankaRemoteController():
 if __name__ == "__main__":
     franka_controller = FrankaRemoteController("ws://192.168.31.190:8765")
     franka_controller.velocity_control([0, 0.05, 0.0, 0.0, 0.0, 0.0])  # Example twist input
+    time.sleep(1)  # 等待一秒
     print(franka_controller.stop())  # 停止机器人
 
