@@ -59,6 +59,8 @@ class franka_spm():
     def pose_control(self, target_pose,mode=0):
         """
         Move the robot to the target position
+
+        mode: 0 for 6D pose input , 1 for 3D position and 4D quaternion input
         """
         if mode==0:
             r=R.from_euler('xyz', target_pose[3:])

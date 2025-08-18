@@ -1,0 +1,21 @@
+    {
+        // Use IntelliSense to learn about possible attributes.
+        // Hover to view descriptions of existing attributes.
+        // For more information, visit: https://go.microsoft.com/fwlink/?linkid=830387
+        "version": "0.2.0",
+        "configurations": [
+
+            {
+                "name": "Python Debugger: Current File with Arguments",
+                "type": "debugpy",
+                "request": "launch",
+                "program": "/root/autodl-tmp/diffusion_policy_editted/train.py",
+                "console": "integratedTerminal",
+                //"args": "${command:pickArgs}"
+            "args": [
+                "--config-name", "train_diffusion_unet_real_image_workspace.yaml",
+                "task.dataset_path=/root/autodl-tmp/real_push_T"
+            ]
+            }
+        ]
+    }

@@ -16,22 +16,23 @@ def franka_ctrl():
     global command
     global response
     global action
+    global msg
     while True:
         try:
-            if command == 'VELOCITY_CONTROL':
+            if msg.get("command") == 'VELOCITY_CONTROL':
+                action = msg.get("action")
                 franka_controller.velocity_control(action)
-                print('vel')
-            elif command == 'POSE_CONTROL':
-                print('pose')
-                franka_controller.pose_control(action,mode=1)
-            elif command == 'GRASP':
+            elif msg.get("command") == 'POSE_CONTROL':
+                action = msg.get("action")
+                mode = msg.get("mode")
+                franka_controller.pose_control(action,mode=mode)
+            elif msg.get("command") == 'GRASP':
                 franka_controller.grasp()
-            elif command == 'RELEASE':
+            elif msg.get("command") == 'RELEASE':
                 franka_controller.release()
-            elif command == 'STOP':
+            elif msg.get("command") == 'STOP':
                 franka_controller.velocity_control([0, 0, 0, 0, 0, 0])  # 停止机器人
-            elif command == 'QUEST':
-                print('quest')
+            elif msg.get("command") == 'QUEST':
                 pass
             response = {    'status': command,
                         'ee_pose': franka_controller.Affine2list(franka_controller.ee_pose),
@@ -47,20 +48,21 @@ def franka_ctrl():
 async def handle_connection(websocket):
     try:
         async for message in websocket:
-            msg = json.loads(message)
             global command
             global response
             global action
-            print(msg)
-            command = msg.get("command")
-            if command=='VELOCITY_CONTROL' or command=='POSE_CONTROL': 
-                action = msg.get("action")
-                await websocket.send(json.dumps(response))
-            elif command=='GRASP' or command=='RELEASE':
+            global msg
+            msg = json.loads(message)
+            # command = msg.get("command")
+            # if command=='VELOCITY_CONTROL' or command=='POSE_CONTROL': 
+            #     action = msg.get("action")
+            #     await websocket.send(json.dumps(response))
+            # elif command=='GRASP' or command=='RELEASE':
 
-                await websocket.send(json.dumps(response))
-            elif command=='QUEST':
-                await websocket.send(json.dumps(response))
+            #     await websocket.send(json.dumps(response))
+            # elif command=='QUEST':
+            #     await websocket.send(json.dumps(response))
+            await websocket.send(json.dumps(response))
         
             # 回复上位机
             # asyncio.run(websocket.send(json.dumps(response)))
