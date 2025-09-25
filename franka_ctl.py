@@ -24,6 +24,7 @@ class franka_spm():
         twist: [vx, vy, vz, wx, wy, wz]
         """
         self.cb()
+        twist=np.array(twist,dtype=np.float32)
         # Transform the velocity to the robot's coordinate system
         linear_velocity= twist[:3]*self.translation_inter_scale
         angular_velocity= twist[3:]*self.rotation_inter_scale
