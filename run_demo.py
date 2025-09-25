@@ -7,7 +7,7 @@ if __name__ == "__main__":
 
 
     # Initialize the Franka controller
-    franka_controller = franka_spm()
+    franka_controller = franka_spm(start_grip=True)
     
     try:
         with Spacemouse(deadzone=0.1,transmat=2) as sm:
@@ -20,7 +20,7 @@ if __name__ == "__main__":
                 # print(motion_state, close, open)
 
                 # Send the motion state to the Franka controller
-                motion_state[2:]=0
+                # motion_state[2:]=0
                 franka_controller.velocity_control(motion_state)
                 # franka_controller.waypoint_control(motion_state)
                 

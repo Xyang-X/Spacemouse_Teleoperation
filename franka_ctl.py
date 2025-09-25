@@ -5,9 +5,10 @@ import time
 from scipy.spatial.transform import Rotation as R, Slerp
 
 class franka_spm():
-    def __init__(self,translation_inter_scale=0.3,rotation_inter_scale=0.8):
+    def __init__(self,translation_inter_scale=0.2,rotation_inter_scale=0.8,start_grip=False):
         self.robot = Robot("172.16.0.2")
-        # self.gripper = Gripper("172.16.0.2")
+        if start_grip:
+            self.gripper = Gripper("172.16.0.2")
         self.cb()  # Initialize the robot state
         self.robot.relative_dynamics_factor = RelativeDynamicsFactor(0.05, 0.1, 0.15)
         
@@ -24,8 +25,8 @@ class franka_spm():
         """
         self.cb()
         # Transform the velocity to the robot's coordinate system
-        linear_velocity= twist[:3]
-        angular_velocity= twist[3:]
+        linear_velocity= twist[:3]*self.translation_inter_scale
+        angular_velocity= twist[3:]*self.rotation_inter_scale
         m_cv=CartesianVelocityMotion(Twist(linear_velocity, angular_velocity), relative_dynamics_factor=0.2)
 
         self.robot.move(m_cv, asynchronous=True)    
@@ -64,7 +65,7 @@ class franka_spm():
         """
         Grasp the object by moving the end-effector down
         """
-        speed = 0.02  # [m/s]
+        speed = 0.05  # [m/s]
         force = 10.0  # [N]
         success = self.gripper.grasp(0.0, speed, force, epsilon_outer=1.0)
         return success
@@ -73,7 +74,7 @@ class franka_spm():
         """
         Release the object by moving the end-effector up
         """
-        speed = 0.02  # [m/s]
+        speed = 0.05  # [m/s]
         self.gripper.open(speed)
     
     def Affine2list(self,affine):
