@@ -36,7 +36,10 @@ def franka_ctrl():
             response = {    'status': command,
                         'ee_pose': franka_controller.Affine2list(franka_controller.ee_pose),
                         'ee_twist': franka_controller.Twist2list(franka_controller.ee_twist),
-                        'elbow_vel': franka_controller.Twist2list(franka_controller.ee_twist)}
+                        'elbow_vel': franka_controller.Twist2list(franka_controller.ee_twist),
+                        'joint_pos': franka_controller.joint_pos.tolist(),
+                        'joint_vel': franka_controller.joint_vel.tolist(),
+                        }
         except Exception as e:
             print(f"Error in franka_ctrl: {e}")
             response = {'status': 'error', 'message': str(e)}

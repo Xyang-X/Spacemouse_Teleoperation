@@ -23,15 +23,17 @@ async def hello():
         await websocket.send(json.dumps(message))
         print("发送:", message)
         
-class FrankaRemoteController():
+class FrankaClient():
     def __init__(self,uri):
         self.uri = uri
+        self.quest()
     
     def velocity_control(self, action):
         cmd={
             'command':"VELOCITY_CONTROL",
             'action': action}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
     
     def pose_control(self, action, mode=0):
@@ -40,31 +42,44 @@ class FrankaRemoteController():
             'action': action,
             'mode': mode}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
 
     def stop(self):
         cmd={
             'command':"STOP"}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
 
     def quest(self):
         cmd={
             'command':"QUEST"}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
     
     def grasp(self):
         cmd={
             'command':"GRASP"}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
     
     def release(self):
         cmd = {
             'command':"RELEASE"}
         response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
         return response
+    
+    def read_response(self,response):
+        response = json.loads(response)
+        self.ee_pose = response.get("ee_pose", None)
+        self.ee_vel = response.get("ee_twist", None)
+        self.joint_pos = response.get("joint_pos", None)
+        self.joint_vel = response.get("joint_vel", None)
+
 
     async def send_command(self, command):
         async with websockets.connect(self.uri) as websocket:
@@ -79,8 +94,8 @@ class FrankaRemoteController():
     
 
 if __name__ == "__main__":
-    franka_controller = FrankaRemoteController("ws://192.168.31.190:8765")
-    franka_controller.velocity_control([0, 0.05, 0.0, 0.0, 0.0, 0.0])  # Example twist input
-    time.sleep(1)  # 等待一秒
-    print(franka_controller.stop())  # 停止机器人
+    franka_controller = FrankaClient("ws://192.168.31.190:8765")
+    franka_controller.velocity_control([0, -0.05, 0.0, 0.0, 0.0, 0.0])  # Example twist input
+    time.sleep(2)  # 等待一秒
+    franka_controller.stop() # 停止机器人
 
