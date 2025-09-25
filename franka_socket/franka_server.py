@@ -34,7 +34,7 @@ def franka_ctrl():
             elif command == 'RELEASE':
                 franka_controller.release()
             elif command == 'STOP':
-                franka_controller.velocity_control(np.arrary([0, 0, 0, 0, 0, 0]))  # 停止机器人
+                franka_controller.velocity_control(np.array([0, 0, 0, 0, 0, 0]))  # 停止机器人
             elif command == 'QUEST':
                 pass
             response = {    'status': command,
