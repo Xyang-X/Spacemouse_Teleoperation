@@ -44,6 +44,14 @@ class FrankaClient():
         response = asyncio.run(self.send_command(cmd))
         self.read_response(response)
         return response
+    
+    def joint_control(self, action):
+        cmd={
+            'command':"JOINT_CONTROL",
+            'action': action}
+        response = asyncio.run(self.send_command(cmd))
+        self.read_response(response)
+        return response
 
     def stop(self):
         cmd={

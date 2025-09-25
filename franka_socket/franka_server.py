@@ -25,6 +25,9 @@ def franka_ctrl():
                 action = msg.get("action")
                 mode = msg.get("mode")
                 franka_controller.pose_control(action,mode=mode)
+            elif command == 'JOINT_CONTROL':
+                action = msg.get("action")
+                franka_controller.joint_control(action)
             elif command == 'GRASP':
                 franka_controller.grasp()
             elif command == 'RELEASE':

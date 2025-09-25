@@ -46,6 +46,9 @@ class franka_spm():
         joint_state = self.robot.current_joint_state
         self.joint_pos = joint_state.position
         self.joint_vel = joint_state.velocity
+    
+    # def cb(robot_state: RobotState, time_step: Duration, rel_time: Duration, abs_time: Duration, control_signal: JointPositions):
+        # print(f"At time {abs_time}, the target joint positions were {control_signal.q}")
         
     def pose_control(self, target_pose,mode=0):
         """
@@ -59,7 +62,14 @@ class franka_spm():
             m_cp=CartesianMotion(Affine(target_pose[:3],quat),relative_dynamics_factor=0.2)
         elif mode==1:
             m_cp=CartesianMotion(Affine(target_pose[:3],target_pose[3:]),relative_dynamics_factor=0.2)
-        self.robot.move(m_cp)    
+        self.robot.move(m_cp)  
+
+    def joint_control(self, target_joint):
+        """
+        Move the robot to the target joint position
+        """
+        m_jp=JointMotion(target_joint,relative_dynamics_factor=0.2)
+        self.robot.move(m_jp, asynchronous=True)  
 
     def grasp(self):
         """
