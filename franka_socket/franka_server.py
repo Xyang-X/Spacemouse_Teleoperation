@@ -47,6 +47,7 @@ def franka_ctrl():
         except Exception as e:
             print(f"Error in franka_ctrl: {e}")
             response = {'status': 'error', 'message': str(e)}
+            franka_controller= franka_spm()  # 重置franka_controller
         
         
         time.sleep(0.1)  # Control loop frequency
