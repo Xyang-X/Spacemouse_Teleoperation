@@ -48,6 +48,7 @@ def franka_ctrl():
             print(f"Error in franka_ctrl: {e}")
             response = {'status': 'error', 'message': str(e)}
             franka_controller= franka_spm()  # 重置franka_controller
+            msg={'command':'QUEST'}  
         
         
         time.sleep(0.1)  # Control loop frequency
