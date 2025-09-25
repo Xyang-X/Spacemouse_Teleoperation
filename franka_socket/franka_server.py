@@ -8,6 +8,7 @@ import json
 from franka_ctl import franka_spm    
 import time
 import threading
+import numpy as np
 
 
 msg={'command':'QUEST'}          #   Franka执行的任务，初始状态为休眠
@@ -33,7 +34,7 @@ def franka_ctrl():
             elif command == 'RELEASE':
                 franka_controller.release()
             elif command == 'STOP':
-                franka_controller.velocity_control([0, 0, 0, 0, 0, 0])  # 停止机器人
+                franka_controller.velocity_control(np.arrary([0, 0, 0, 0, 0, 0]))  # 停止机器人
             elif command == 'QUEST':
                 pass
             response = {    'status': command,
