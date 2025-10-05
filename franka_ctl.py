@@ -16,7 +16,7 @@ class franka_spm():
         self.rotation_inter_scale=rotation_inter_scale
         eular=R.from_quat(self.ee_pose.quaternion).as_euler('xyz', degrees=True)        
         # print(eular)
-        print(self.ee_pose)
+        # print(self.ee_pose)
 
         
     def velocity_control(self, twist):
